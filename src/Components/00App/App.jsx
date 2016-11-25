@@ -12,7 +12,7 @@ class App extends Component {
   }
 
   revealer(e) {
-    console.log('revealing')
+    console.log('test')
     e.currentTarget.nextSibling.style.display = 'block';
   }
 
