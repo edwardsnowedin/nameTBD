@@ -21,7 +21,15 @@ header > h3 {
   /*display: block;*/
 }
 
+<<<<<<< HEAD
 /*header > button {
+=======
+.nButton{
+  color: blue;
+}
+
+header > button {
+>>>>>>> 1c4c87c8709cb13a39bb5f26302e8d8f38373279
   position: relative;
   font-size: 1em;
   border: 1px solid #fafafa;
