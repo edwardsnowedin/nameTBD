@@ -24,16 +24,16 @@ class App extends Component {
     return (
       <div>
         <header>
-          <h1>Grojj.</h1>
-          <h3 className="test">Test</h3>
-          <button>Login or Sign Up</button>
+          <h3>Grojj.</h3>
+          {/* <h3 className="test">Test</h3> */}
+          <button id='showLogin' className='button'>Login or Sign Up</button>
           <nav>
-            <div onMouseEnter={this.revealer} onMouseOut={this.hider}>Search
+            {/* <div onMouseEnter={this.revealer} onMouseOut={this.hider}>Search
               <input type="text" placeholder="search"/>
               <button>Go!</button>
-            </div>
-            <div>myStoreFront</div>
-            <div>Messages</div>
+            </div> */}
+            <div className='nButtons'>myStoreFront</div>
+            <div className='nButtons'>Messages</div>
           </nav>
         </header>
         <main>
