@@ -83,6 +83,11 @@ export default class App extends Component {
     editStoreDiv.style.display = 'none';
   }
 
+  showUserPwd() {
+    let showPwd = document.querySelector('#show-pwd');
+    showPwd.setAttribute('type', 'text');
+  }
+
   getOneStorefront() {
     return fetch('/api/myStorefront', {
       method: 'POST',

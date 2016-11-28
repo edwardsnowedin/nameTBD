@@ -13,7 +13,7 @@ export default class LoginSignup extends Component {
             <br></br>
             <input onChange={this.props.trackLoginForm} type="text" placeholder="password" />
             <br></br>
-            <button id="show-pwd" className='modalButton'>Show Password</button>
+            <button onClick={this.props.showUserPwd} id="show-pwd" className='modalButton'>Show Password</button>
             <br></br>
             <button onClick={this.props.postLogin} className="modalButton">Login</button>
         </div>
@@ -24,7 +24,7 @@ export default class LoginSignup extends Component {
             <br></br>
             <input onChange={this.props.trackSignupForm} type="text" placeholder="password" />
             <br></br>
-            <button id='show-pwd' className='modalButton'>Show Password</button>
+            <button onClick={this.props.showUserPwd} id='show-pwd' className='modalButton'>Show Password</button>
             <br></br>
             <button onClick={this.props.postSignup} className="modalButton">Sign Up</button>
             {/* <button id="loginSignupCancel" onClick={this.props.hideLogin}>Cancel</button> */}
