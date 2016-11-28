@@ -6,10 +6,11 @@
   left: 20vw;
   height: 70vh;
   width: 60vw;
-  background: -moz-linear-gradient(#fff, #999);
-  background: -webkit-linear-gradient(#fff, #999);
-  background: -o-linear-gradient(#fff, #999);
+  background: -moz-linear-gradient(#eaeaea, #999);
+  background: -webkit-linear-gradient(	#eaeaea, #999);
+  background: -o-linear-gradient(	#eaeaea, #999);
   display: none;
+  border-radius: 4px;
 }
 .close-btn{
   height: 3vh;
