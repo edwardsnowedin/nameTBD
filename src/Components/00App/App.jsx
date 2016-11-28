@@ -1,22 +1,28 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import LoginSignup from '../01LoginSignup/LoginSignup.jsx';
-import TestLogin from '../TestLogin/TestLogin.jsx';
 import Logout from '../01Logout/Logout.jsx';
 import CreateStore from '../02CreateStore/CreateStore.jsx';
 import StorefrontDD from '../01StorefrontDD/StorefrontDD.jsx';
+import SearchDD from '../01SearchDD/SearchDD.jsx';
 import AsideSMyStore from '../02AsideSmyStore/AsideSMyStore.jsx';
 import MyItemList from '../02MyItemList/MyItemList.jsx';
 import AddNewItem from '../02AddNewItem/AddNewItem.jsx';
+
+// import Map from './Maps.jsx';
+import './App.css';
+
 import EditStore from '../02EditStore/EditStore.jsx';
 import './MattApp.css';
 // import './App.css';
+
 
 export default class App extends Component {
   constructor() {
     super();
 
     this.state = {
+      searchZip: '',
       loggedIn: false,
       currentUser: '',
       hasStorefront: false,
@@ -29,10 +35,6 @@ export default class App extends Component {
         username: '',
         password: ''
       },
-      loginFormUsername: '',
-      loginFormPassword: '',
-      signupFormUsername: '',
-      signupFormPassword: '',
       currentStorefront: {
         name: '',
         address: '',
@@ -69,7 +71,7 @@ export default class App extends Component {
         price: '',
         description: '',
       },
-      storefronts: []
+      storefrontItems: []
     };
   }
 
@@ -88,6 +90,12 @@ export default class App extends Component {
     editStoreDiv.style.display = 'none';
   }
 
+  showSearchInput() {
+    let searchInput = document.querySelector('#searchInput');
+    console.log(searchInput)
+    searchInput.style.display = 'block';
+  }
+
   getOneStorefront() {
     return fetch('/api/myStorefront', {
       method: 'POST',
@@ -101,7 +109,6 @@ export default class App extends Component {
     })
     .then(r=> r.json())
     .then((data) => {
-      console.log(data[0])
       this.setState({
         hasStorefront: true,
         currentStorefront: {
@@ -116,8 +123,52 @@ export default class App extends Component {
         }
       })
     })
-    .then( () => {
-      console.log(this.state)
+  }
+
+  getStorefrontItems() {
+    return fetch('/api/items', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/JSON',
+        'Authorization': 'Bearer ' + this.state.currentToken
+      },
+      body: JSON.stringify({
+        currentStorefront: this.state.currentStorefront.name
+      })
+    })
+    .then(r=>r.json())
+    .then( (data) => {
+      this.setState({
+        storefrontItems: data
+      })
+    })
+  }
+
+  removeOneStorefront() {
+    return fetch('/api/storefronts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/JSON',
+        'Authorization': 'Bearer ' + this.state.currentToken
+      },
+      body: JSON.stringify({
+        currentUser: this.state.currentUser
+      })
+    })
+    .then(() => {
+      this.setState({
+        hasStorefront: false,
+        storefrontItems: [],
+        currentStorefront: {
+          name: '',
+          address: '',
+          borough: '',
+          directions: '',
+          endTime: '',
+          startTime: '',
+          zip: ''
+        }
+      })
     })
   }
 
@@ -160,9 +211,7 @@ export default class App extends Component {
         }
       })
     })
-    .then(() => {
-      console.log(this.state)
-    });
+    .catch(error => hadasErrorHandlingFunction(error))
   }
 
   postLogin() {
@@ -191,9 +240,6 @@ export default class App extends Component {
     .then( () => {
       this.getOneStorefront();
     })
-    .then( () => {
-      console.log(this.state)
-    })
     .catch(error => console.log(error))
   }
 
@@ -211,25 +257,16 @@ export default class App extends Component {
         endTime: '',
         startTime: '',
         zip: ''
-      }
-    }, () => {
-      console.log(this.state)
+      },
+      storefrontItems: []
     })
   };
 
-  testLogin() {
-    return fetch('/api/items', {
-      headers: {
-        'Content-Type': 'application/JSON',
-        'Authorization': 'Bearer ' + this.state.currentToken
-      },
-    })
-    .then(r=> r.json())
-    .then(() => {
-      console.log(this.state)
-    })
-    .catch(error => console.log(error))
-  };
+  trackSearchInput(e) {
+    this.setState({
+      searchZip: e.target.value
+    });
+  }
 
   trackCreateStore(e) {
     let fieldsArr = e.target.parentElement.parentElement.childNodes;
@@ -244,8 +281,6 @@ export default class App extends Component {
         startTime: fieldsArr[6].children[0].value,
         endTime: fieldsArr[6].children[1].value,
       },
-    }, () => {
-      console.log(this.state)
     })
   }
 
@@ -275,8 +310,23 @@ export default class App extends Component {
         startTime: fieldsArr[6].children[0].value,
         endTime: fieldsArr[6].children[1].value,
       },
-    }, () => {
-      console.log(this.state)
+    })
+  }
+
+  postSearchZip() {
+    console.log('search posted')
+    return fetch('/search/zip', {
+      headers: {
+        'Content-Type': 'application/JSON'
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        'searchZip': this.state.searchZip
+      })
+    })
+    .then(r => r.json())
+    .then(searchResults => {
+      console.log(searchResults)
     })
   }
 
@@ -288,7 +338,6 @@ export default class App extends Component {
     let reveal = document.querySelector('#asideSellerMyStore');
     reveal.style.display = 'block';
 
-    console.log('posting')
     return fetch('/api/storefront', {
       headers: {
         'Content-Type': 'application/JSON'
@@ -321,9 +370,6 @@ export default class App extends Component {
         }
       })
     })
-    .then(() => {
-      console.log(this.state)
-    })
   };
 
   postNewItem() {
@@ -341,15 +387,15 @@ export default class App extends Component {
         description: this.state.createItem.description,
         likes: 0,
         currentUser: this.state.currentUser,
-        currentStorefront: {
-          name: this.state.currentStorefront.name
-        }
+        currentStorefront: this.state.currentStorefront.name
       }),
+    })
+    .then(() => {
+      this.getStorefrontItems();
     })
   };
 
   putEditStorefront() {
-    console.log('put edit storefront before')
     return fetch('/api/storefronts', {
       headers: {
         'Content-Type': 'application/JSON'
@@ -384,15 +430,65 @@ export default class App extends Component {
     })
     .then( () => {
       this.getOneStorefront();
+      this.getStorefrontItems();
       this.hideEditForm();
     })
   };
 
+   // componentWillMount() {
+   //   const body = document.getElementsByTagName('body')[0];
+   //   const script = document.createElement("script");
 
+   //    script.type = 'text/javascript';
+   //    script.className = 'container';
+
+   //    script.src = "http://maps.google.com/maps/api/js?key=AIzaSyDu1zOGCMJEMn2Ja45WRuyWFN_Rv7ZSh3c";
+   //    script.async= true;
+   //    script.defer= true;
+
+   //    body.appendChild(script);
+   //    // script.onload = () => {
+   //    //     console.log(document.querySelector('.container'));
+   //    //     ReactDOM.render( <script />,
+   //    //       document.querySelector('.container')
+   //    //     );
+   //    // };
+
+   //  // console.log(script)
+   //  }
 
   render(){
+
+  // const location = {
+  //   lat: 40.7575285,
+  //   lng: -73.9884469
+  // }
+
+  //   const markers = [
+  //     {
+  //       location:{
+  //         lat: 40.7575285,
+  //         lng: -73.9884469
+  //       }
+  //     }
+  //   ]
+
+
+  // const script = document.querySelector('.container');
+
+  //   script.onload = () => {
+  //         console.log(document.querySelector('.container'));
+  //         ReactDOM.render( <script />,
+  //           document.querySelector('.container')
+  //         );
+  //     };
+
+
     return (
       <div>
+
+
+
         <header>
           <h1>Grojj.</h1>
           <button onClick={this.showLogin}>Login or Sign Up</button>
@@ -400,7 +496,11 @@ export default class App extends Component {
             logout={this.logout.bind(this)}
           />
           <nav>
-            <div className="nButton">Search</div>
+            <SearchDD
+              showSearchInput={this.showSearchInput}
+              trackSearchInput={this.trackSearchInput.bind(this)}
+              postSearchZip={this.postSearchZip.bind(this)}
+            />
             <StorefrontDD
               loggedIn={this.state.loggedIn}
               currentUser={this.state.currentUser}
@@ -418,14 +518,12 @@ export default class App extends Component {
           </nav>
         </header>
         <main>
-          <TestLogin
-            testLogin={this.testLogin.bind(this)}
-          />
           <CreateStore
             postNewStorefront={this.postNewStorefront.bind(this)}
             trackCreateStore={this.trackCreateStore.bind(this)}
           />
           <EditStore
+            currentStorefront={this.state.currentStorefront}
             putEditStorefront={this.putEditStorefront.bind(this)}
             trackEditStore={this.trackEditStore.bind(this)}
             hideEditForm={this.hideEditForm.bind(this)}
@@ -433,8 +531,11 @@ export default class App extends Component {
           <AsideSMyStore
             currentStorefront={this.state.currentStorefront}
             currentUser={this.state.currentUser}
+            removeOneStorefront={this.removeOneStorefront.bind(this)}
           />
-          <MyItemList />
+          <MyItemList
+            storefrontItems={this.state.storefrontItems}
+          />
           <AddNewItem
             postNewItem={this.postNewItem.bind(this)}
             trackCreateItem={this.trackCreateItem.bind(this)}
