@@ -13,8 +13,8 @@ class AddNewItem extends Component {
   render(){
     return(
       <div id="addItemDiv">
-        <h2 id="addItemHeading">Let's add an item!</h2>
-
+        <h4 id="addItemHeading">Add an item!</h4>
+        <button className='close-btn' onClick={this.props.hideLogin}>X</button>
         <div className="fillOut">
           <input onChange={this.props.trackCreateItem} className="name" type="text" placeholder="What is the name of your item?" required></input>
           <input onChange={this.props.trackCreateItem} className="itemU" type="text" placeholder="Enter a link to an image of your item." required></input>
@@ -35,7 +35,7 @@ class AddNewItem extends Component {
         <input onChange={this.props.trackCreateItem} id="desc" type="text" placeholder="Description of Item" required></input>
         <div className="createOrCancel">
           <button onClick={this.props.postNewItem} id="createItemButton">Add Item</button>
-          <button onClick={this.hideNewItem} id="cancelItemButton">Cancel</button>
+          {/* <button onClick={this.hideNewItem} id="cancelItemButton">Cancel</button> */}
         </div>
         </div>
       </div>
